@@ -5,7 +5,7 @@ from flask_debugtoolbar import DebugToolbarExtension
 from sqlalchemy.exc import IntegrityError
 
 from forms import UserAddForm, LoginForm, MessageForm, UserEditForm
-from models import db, connect_db, User, Message
+from models import db, connect_db, User, Message, Like
 
 CURR_USER_KEY = "curr_user"
 
@@ -201,6 +201,15 @@ def stop_following(follow_id):
     return redirect(f"/users/{g.user.id}/following")
 
 
+@app.route('/users/<int:user_id>/likes')
+def show_liked_messages(user_id):
+    """Shows list of liked messages"""
+    
+    liked_messages = g.user.get_sorted_liked_messages()
+    
+    return render_template('users/liked.html', user=g.user, messages=liked_messages)
+    
+
 @app.route('/users/profile', methods=["GET", "POST"])
 def profile():
     """Update profile for current user."""
@@ -300,6 +309,17 @@ def like_message(message_id):
 
     return redirect('/')
 
+@app.route('/messages/<int:message_id>/unlike', methods=["POST"])
+def unlike_message(message_id):
+    """Unlike a message."""
+
+    liked_message = Like.query.filter((Like.message_id==message_id) & (Like.user_id==g.user.id)).first()
+    
+    db.session.delete(liked_message)
+    db.session.commit()
+
+    return redirect('/')
+
 
 ##############################################################################
 # Homepage and error pages
@@ -318,11 +338,12 @@ def homepage():
         following_ids = [user.id for user in g.user.following]
         messages = (Message
                     .query
-                    .filter( (Message.user_id.in_(following_ids)) | (Message.user_id == g.user.id))
+                    .filter((Message.user_id.in_(following_ids)) | (Message.user_id == g.user.id))
                     .order_by(Message.timestamp.desc())
                     .limit(100)
                     .all())
-
+        
+        g.liked_message_ids = [m.id for m in g.user.liked_messages]
         return render_template('home.html', messages=messages)
 
     else:

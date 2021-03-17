@@ -55,13 +55,13 @@
             <div class="message-area">
               <a href="/users/{{ msg.user.id }}">@{{ msg.user.username }}</a>
               <span class="text-muted">{{ msg.timestamp.strftime('%d %B %Y') }}</span>
-              {% if msg.id in g.user.liked_messages %}
-              <form action="/msg/{{msg.id}}/unlike" method="POST"><button type="submit"  class="fas fa-heart"></button></form>
-              {% else %}
-              <form action="/msg/{{msg.id}}/like" method="POST"><button type="submit" class="far fa-heart"></button></form>
-              {% endif %}
               <p>{{ msg.text }}</p>
             </div>
+              {% if msg.id in g.liked_message_ids %}
+                <form action="/messages/{{msg.id}}/unlike" method="POST"><button type="submit" class="btn btn-link text-primary p-0 btn-sm fas fa-heart"></button></form>
+              {% else %}
+                <form action="/messages/{{msg.id}}/like" method="POST"><button type="submit" class="btn btn-link text-primary p-0 btn-sm far fa-heart"></button></form>
+              {% endif %}
           </li>
         {% endfor %}
       </ul>

@@ -103,6 +103,14 @@ class User(db.Model):
         found_user_list = [user for user in self.following if user == other_user]
         return len(found_user_list) == 1
 
+    def get_timestamp(self, message):
+        """Returns message timestamp"""
+        return message.timestamp
+
+    def get_sorted_liked_messages(self):
+        """Returns sorted list of liked messages"""
+        return sorted(self.liked_messages, key=self.get_timestamp, reverse=True)
+
     @classmethod
     def signup(cls, username, email, password, image_url):
         """Sign up user.
