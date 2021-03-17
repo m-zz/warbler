@@ -172,6 +172,8 @@ class Message(db.Model):
 
     user = db.relationship('User')
 
+    liked_users = db.relationship('User', secondary='likes', backref='liked_messages')
+
 
 def connect_db(app):
     """Connect this database to provided Flask app.
@@ -181,3 +183,20 @@ def connect_db(app):
 
     db.app = app
     db.init_app(app)
+
+class Like(db.Model):
+    "An individual like for a message"
+
+    __tablename__ = 'likes'
+
+    user_id = db.Column(
+        db.Integer,
+        db.ForeignKey('users.id', ondelete="cascade"),
+        primary_key=True,
+    )
+
+    message_id = db.Column(
+        db.Integer,
+        db.ForeignKey('messages.id', ondelete="cascade"),
+        primary_key=True,
+    )
