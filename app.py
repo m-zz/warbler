@@ -91,6 +91,7 @@ def signup():
                 password=form.password.data,
                 email=form.email.data,
                 image_url=form.image_url.data or User.image_url.default.arg,
+                private=form.private.data
             )
             db.session.commit()
 
@@ -369,3 +370,22 @@ def add_header(response):
     # https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control
     response.cache_control.no_store = True
     return response
+
+
+
+
+
+
+# Profile View:
+# - Checks if account is private
+# - If private, check if user is a follower
+# - If not a follower, display "This account is private"
+
+# Requesting Following on Private Account:
+# - Conditional logic to see if user is pending request for generating "Follow" buttons
+# - 
+
+# Accepting a Follow Request:
+# - Generate button to accept request on left aside
+# - Logic to add follower in models
+# - 

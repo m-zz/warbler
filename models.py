@@ -10,7 +10,10 @@ db = SQLAlchemy()
 
 
 class Follows(db.Model):
-    """Connection of a follower <-> followed_user."""
+    """Connection of a follower <-> followed_user.
+       Status indicates if a follower is allowed to view a followed_user's info
+       Status will turn false if followed_user account is private or if the follower
+       has been blocked"""
 
     __tablename__ = 'follows'
 
@@ -24,6 +27,16 @@ class Follows(db.Model):
         db.Integer,
         db.ForeignKey('users.id', ondelete="cascade"),
         primary_key=True,
+    )
+
+    pending = db.Column(
+        db.Boolean,
+        default=False
+    )
+
+    blocked = db.Column(
+        db.Boolean,
+        default=False
     )
 
 
@@ -72,6 +85,11 @@ class User(db.Model):
         nullable=False,
     )
 
+    private = db.Column(
+        db.Boolean,
+        default=False,
+    )
+
     messages = db.relationship('Message', order_by='Message.timestamp.desc()')
 
     followers = db.relationship(
@@ -86,6 +104,10 @@ class User(db.Model):
         secondary="follows",
         primaryjoin=(Follows.user_following_id == id),
         secondaryjoin=(Follows.user_being_followed_id == id)
+    )
+
+    pending_followers = db.relationship(
+        "Follows"
     )
 
     def __repr__(self):
@@ -119,7 +141,7 @@ class User(db.Model):
         db.session.commit()   
 
     @classmethod
-    def signup(cls, username, email, password, image_url):
+    def signup(cls, username, email, password, image_url, private=False):
         """Sign up user.
 
         Hashes password and adds user to system.
@@ -132,6 +154,7 @@ class User(db.Model):
             email=email,
             password=hashed_pwd,
             image_url=image_url,
+            private=private
         )
 
         db.session.add(user)

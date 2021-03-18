@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, TextAreaField
+from wtforms import StringField, PasswordField, TextAreaField, BooleanField
 from wtforms.validators import DataRequired, Email, Length, EqualTo
 from wtforms_validators import NotEqualTo
 
@@ -17,6 +17,7 @@ class UserAddForm(FlaskForm):
     email = StringField('E-mail', validators=[DataRequired(), Email()])
     password = PasswordField('Password', validators=[Length(min=6)])
     image_url = StringField('(Optional) Image URL')
+    private = BooleanField('Private Account')
 
 
 class LoginForm(FlaskForm):
@@ -34,6 +35,7 @@ class UserEditForm(FlaskForm):
     image_url = StringField('(Optional) Image URL')
     header_image_url = StringField('(Optional) Header Image URL')
     bio = StringField('Bio')
+    private = BooleanField('Private Account')
     
     password = PasswordField('Password', validators=[Length(min=6)])
 

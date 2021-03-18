@@ -10,12 +10,20 @@
       <form method="POST" id="user_form">
         {{ form.hidden_tag() }}
 
-        {% for field in form if field.widget.input_type != 'hidden' %}
+        {% for field in form if field.widget.input_type != 'hidden' and field.name != 'private'%}
           {% for error in field.errors %}
             <span class="text-danger">{{ error }}</span>
           {% endfor %}
           {{ field(placeholder=field.label.text, class="form-control") }}
         {% endfor %}
+
+        <div class="form-check mb-4">
+          {{ form.private(placeholder="Private Account", class="form-check-input")}}
+          <label class="form-check-label" for="defaultCheck1">
+            Private Account
+          </label>
+        </div>
+        
 
         <button class="btn btn-primary btn-lg btn-block">Sign me up!</button>
       </form>
