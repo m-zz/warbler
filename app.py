@@ -5,7 +5,7 @@ from flask_debugtoolbar import DebugToolbarExtension
 from sqlalchemy.exc import IntegrityError
 from functools import wraps
 
-from forms import UserAddForm, LoginForm, MessageForm, UserEditForm
+from forms import UserAddForm, LoginForm, MessageForm, UserEditForm, ResetPasswordForm
 from models import db, connect_db, User, Message, Like
 
 CURR_USER_KEY = "curr_user"
@@ -236,6 +236,19 @@ def profile():
 
     return render_template('users/edit.html', form=form)
 
+@app.route('/users/<int:user_id>/pwdreset', methods=["GET", "POST"])
+@login_required
+def reset_password(user_id):
+    """Updates password for current user."""
+
+    form = ResetPasswordForm()
+
+    if form.validate_on_submit():
+        if User.authenticate(g.user.username, form.curr_password.data):       
+            g.user.reset_password(form.new_password.data)
+            return redirect(f'/users/{g.user.id}')
+
+    return render_template('users/reset.html', form=form)
 
 @app.route('/users/delete', methods=["POST"])
 @login_required

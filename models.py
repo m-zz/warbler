@@ -111,6 +111,13 @@ class User(db.Model):
         """Returns sorted list of liked messages"""
         return sorted(self.liked_messages, key=self.get_timestamp, reverse=True)
 
+    def reset_password(self, new_password):
+        """Resets current user's password"""
+
+        hashed_pwd = bcrypt.generate_password_hash(new_password).decode('UTF-8')
+        self.password = hashed_pwd
+        db.session.commit()   
+
     @classmethod
     def signup(cls, username, email, password, image_url):
         """Sign up user.
@@ -150,6 +157,7 @@ class User(db.Model):
 
         return False
 
+    
 
 class Message(db.Model):
     """An individual message ("warble")."""
