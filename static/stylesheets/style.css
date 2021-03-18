@@ -274,7 +274,8 @@ nav + .container {
 }
 
 #messages .list-group-item .fa-heart {
-  position: relative;
+  position: absolute;
+  right: 5px;
   z-index: 3;
 }
 
@@ -333,6 +334,8 @@ nav + .container {
   padding: 4px 12px;
   font-size: 12px;
 }
+
+
 
 .card-hero {
   width: 100%;
@@ -434,6 +437,8 @@ p.card-bio {
 /* ============================== Signed in Home */
 
 #home-aside > .user-card {
+  position: sticky;
+  top: 20px;
   margin-top: 0;
   overflow: hidden;
 }

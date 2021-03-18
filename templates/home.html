@@ -40,32 +40,48 @@
               </h4>
             </li>
           </ul>
+          <button type="button" class="btn btn-primary translate-middle" data-toggle="modal" data-target="#exampleModal">
+            Launch demo modal
+          </button>
         </div>
       </div>
     </aside>
-
-    <div class="col-lg-6 col-md-8 col-sm-12">
-      <ul class="list-group" id="messages">
-        {% for msg in messages %}
-          <li class="list-group-item">
-            <a href="/messages/{{ msg.id }}" class="message-link"/>
-            <a href="/users/{{ msg.user.id }}">
-              <img src="{{ msg.user.image_url }}" alt="" class="timeline-image">
-            </a>
-            <div class="message-area">
-              <a href="/users/{{ msg.user.id }}">@{{ msg.user.username }}</a>
-              <span class="text-muted">{{ msg.timestamp.strftime('%d %B %Y') }}</span>
-              <p>{{ msg.text }}</p>
-            </div>
-              {% if msg.id in g.liked_message_ids %}
-                <form action="/messages/{{msg.id}}/unlike" method="POST"><button type="submit" class="btn btn-link text-primary p-0 btn-sm fas fa-heart"></button></form>
-              {% else %}
-                <form action="/messages/{{msg.id}}/like" method="POST"><button type="submit" class="btn btn-link text-primary p-0 btn-sm far fa-heart"></button></form>
-              {% endif %}
-          </li>
-        {% endfor %}
-      </ul>
+    <!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">New Warble</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <!--Warble form-->
+            <form method="POST" action="/messages/new">
+              {{ form.csrf_token }}
+              <div>
+                {% if form.text.errors %}
+                  {% for error in form.text.errors %}
+                    <span class="text-danger">
+                  {{ error }}
+                </span>
+                  {% endfor %}
+                {% endif %}
+                {{ form.text(placeholder="What's happening?", class="form-control", rows="3") }}
+              </div>
+          <!-- end warble form-->
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-outline-success btn-block">Add my message!</button>
+        </div>
+      </div>
     </div>
+  </div>
+</form>
+<!-- End Modal-->
+    {% include "message_list.j2" %}
+ 
 
   </div>
 {% endblock %}

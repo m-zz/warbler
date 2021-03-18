@@ -75,6 +75,8 @@ class UserModelTestCase(TestCase):
 
         db.session.add(u)
         db.session.commit()
+        #add a couple more assertions
+
 
         # User should have no messages & no followers
         self.assertEqual(len(u.messages), 0)

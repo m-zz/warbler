@@ -71,6 +71,8 @@ class UserViewTestCase(TestCase):
             self.assertNotIn("Following", html)
             self.assertNotIn("Followers", html)
 
+            #add status code check
+
     def test_add_delete_message(self):
         """Can you add and delete a message when logged in"""
 
@@ -88,6 +90,7 @@ class UserViewTestCase(TestCase):
             html = del_route.get_data(as_text=True)
 
             self.assertNotIn("Hello", html)
+
 
 
     def test_add_delete_message_when_logged_out(self):
