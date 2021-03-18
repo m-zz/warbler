@@ -70,3 +70,49 @@ class MessageViewTestCase(TestCase):
 
             msg = Message.query.one()
             self.assertEqual(msg.text, "Hello")
+
+    def test_delete_msg(self):
+        """Can we delete a message"""
+
+        with self.client as c:
+            with c.session_transaction() as sess:
+                sess[CURR_USER_KEY] = self.testuser.id
+
+
+            resp = c.post("/messages/new", data={"text": "Very unique message"})
+
+            msg = Message.query.one()
+            del_route = c.post(f"messages/{msg.id}/delete")
+            self.assertEqual(len(Message.query.all()), 0)
+
+    def test_msg_like_and_unlike(self):
+        """Can we like a msg"""
+
+        with self.client as c:
+            with c.session_transaction() as sess:
+                sess[CURR_USER_KEY] = self.testuser.id
+
+            c.post("/messages/new", data={"text": "Hello"}, follow_redirects=True)
+            msg = Message.query.one()
+
+            resp = c.post(f"/messages/{msg.id}/like", follow_redirects=True)
+            html = resp.get_data(as_text=True)
+
+            self.assertIn("fas fa-heart", html)
+
+            resp = c.post(f"/messages/{msg.id}/unlike", follow_redirects=True)
+            html = resp.get_data(as_text=True)
+
+            self.assertIn("far fa-heart", html)
+
+
+
+    
+
+
+
+        
+
+
+
+    
