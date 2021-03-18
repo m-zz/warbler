@@ -114,7 +114,7 @@ class UserModelTestCase(TestCase):
             db.session.commit()
 
     def test_authentication(self):
-        """Does authenitcation work"""
+        """Does authentication work"""
 
         temp_user = User.signup( 'name', 'fakeemail2@gmail.com', 'password', None)
         db.session.commit()
