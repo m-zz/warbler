@@ -1,8 +1,20 @@
 {% extends 'users/detail.html' %}
 
-
+{% block user_details %}
   <div class="col-sm-9">
     <div class="row">
+
+        <form class="navbar-form navbar-right" action="/users/{{g.user.id}}/find-to-block" method="POST">
+            <input
+                name="q_search"
+                class="form-control"
+                placeholder="Search Warbler"
+                aria-label="Search"
+                id="qsearch">
+            <button class="btn btn-default">
+              <span class="fa fa-search"></span>
+            </button>
+          </form>
 
       {% for blocked_user in users %}
 
@@ -20,16 +32,10 @@
                       class="card-image">
                   <p>@{{ blocked_user.username }}</p>
                 </a>
-                {% if g.user.is_following(blocked_user) %}
                   <form method="POST"
-                        action="/users/stop-following/{{ blocked_user.id }}">
-                    <button class="btn btn-primary btn-sm">Unfollow</button>
+                        action="/users/{{ blocked_user.id }}/unblock">
+                    <button class="btn btn-primary btn-sm">Unblock</button>
                   </form>
-                {% else %}
-                  <form method="POST" action="/users/follow/{{ blocked_user.id }}">
-                    <button class="btn btn-outline-primary btn-sm">Follow</button>
-                  </form>
-                {% endif %}
 
               </div>
               <p class="card-bio">{{ blocked_user.bio }}</p>
@@ -41,3 +47,4 @@
 
     </div>
   </div>
+  {% endblock %}

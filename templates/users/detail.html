@@ -24,7 +24,7 @@
             <li class="stat">
               <p class="small">Followers</p>
               <h4>
-                <a href="/users/{{ user.id }}/followers">{{ user.followers | length }}</a>
+                <a href="/users/{{ user.id }}/followers">{{ (user.followers | length) - (user.get_blocking_ids() | length) }}</a>
               </h4>
             </li>
             <li class="stat">
@@ -62,7 +62,7 @@
       <h4 id="sidebar-username">@{{ user.username }}</h4>
       <p>{{ user.bio }}</p>
       <p class="user-location"><span class="fa fa-map-marker"></span>{{ user.location }}</p>
-      <a href="/users/{{user.id}}/block" class="btn btn-outline-secondary">Block Users</a>
+      <a href="/users/{{user.id}}/blocked" class="btn btn-outline-secondary">Block Users</a>
     </div>
 
     {% block user_details %}

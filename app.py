@@ -1,6 +1,6 @@
 import os
 
-from flask import Flask, render_template, request, flash, redirect, session, g
+from flask import Flask, render_template, request, flash, redirect, session, g, url_for
 from flask_debugtoolbar import DebugToolbarExtension
 from sqlalchemy.exc import IntegrityError
 from functools import wraps
@@ -215,11 +215,48 @@ def show_liked_messages(user_id):
     
     return render_template('users/liked.html', user=g.user, messages=liked_messages)
 
-@app.route('/users/<int:user_id>/block')
-def show_block_list(user_id):
+@app.route('/users/<int:user_id>/find-to-block', methods=["POST"])
+def get_users_to_block(user_id):
 
-    blocked_users= Follows.query.filter((Follows.user_being_followed_id == user_id)).filter(Follows.blocked== True).all()
+    users = User.query.filter(User.username.like(f"%{request.form.get('q_search')}%")).all()
+    
+
+    return render_template('users/find-block.html', users = users, user=g.user)
+
+@app.route('/users/<int:user_id>/blocked')
+def show_block_list(user_id):
+    """ Display users that have been blocked by current user"""
+    
+    blocked_relationships = Follows.query.filter((Follows.user_being_followed_id == user_id)).filter(Follows.blocked== True).all()
+    blocked_users = User.query.filter(User.id.in_([r.user_following_id for r in blocked_relationships])).all()
+    print(blocked_users)
     return render_template('users/blocked.html', users = blocked_users, user=g.user)
+
+@app.route("/users/<int:blocked_user_id>/unblock", methods=["POST"])
+def unblock_user(blocked_user_id):
+    """ Unblock user"""
+    relation = Follows.query.get((g.user.id, blocked_user_id))
+    relation.blocked = False
+    db.session.commit()
+
+    return redirect(f'/users/{g.user.id}/blocked')
+
+@app.route('/users/<int:blocked_id>/block', methods=["POST"])
+def block_user(blocked_id):
+    """Estblishes a blocked relationship through the follows table """
+    
+    relation = Follows.query.get((g.user.id, blocked_id))
+
+    if relation:
+        relation.blocked = True
+    else:
+        new_block = Follows(user_being_followed_id = g.user.id, user_following_id = blocked_id, pending  = False, blocked = True)
+        db.session.add(new_block)
+
+    db.session.commit()
+
+    return redirect(f'/users/{g.user.id}/blocked')
+
 
 @app.route('/users/profile', methods=["GET", "POST"])
 @login_required
