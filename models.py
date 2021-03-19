@@ -106,9 +106,7 @@ class User(db.Model):
         secondaryjoin=(Follows.user_being_followed_id == id)
     )
 
-    pending_followers = db.relationship(
-        "Follows"
-    )
+
 
     def __repr__(self):
         return f"<User #{self.id}: {self.username}, {self.email}>"
@@ -119,11 +117,25 @@ class User(db.Model):
         found_user_list = [user for user in self.followers if user == other_user]
         return len(found_user_list) == 1
 
+
     def is_following(self, other_user):
         """Is this user following `other_use`?"""
 
         found_user_list = [user for user in self.following if user == other_user]
         return len(found_user_list) == 1
+
+    def get_blocked_by_ids(self, other_user):
+        """Is this user blocked by `other_user`?"""
+
+        query_result = Follows.query.filter((Follows.user_following_id == self.id)).filter(Follows.blocked== True).all()
+        return [user.id for user in query_result]
+
+    def get_blocking_ids(self, other_user):
+        """Is this user blocking other_user? ?"""
+        
+        query_result = Follows.query.filter((Follows.user_being_followed_id == self.id)).filter(Follows.blocked== True).all()
+        return [user.id for user in query_result]
+
 
     def get_timestamp(self, message):
         """Returns message timestamp"""

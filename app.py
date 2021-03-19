@@ -6,7 +6,7 @@ from sqlalchemy.exc import IntegrityError
 from functools import wraps
 
 from forms import UserAddForm, LoginForm, MessageForm, UserEditForm, ResetPasswordForm
-from models import db, connect_db, User, Message, Like
+from models import db, connect_db, User, Message, Like, Follows
 
 CURR_USER_KEY = "curr_user"
 
@@ -214,7 +214,12 @@ def show_liked_messages(user_id):
     liked_messages = g.user.get_sorted_liked_messages()
     
     return render_template('users/liked.html', user=g.user, messages=liked_messages)
-    
+
+@app.route('/users/<int:user_id>/block')
+def show_block_list(user_id):
+
+    blocked_users= Follows.query.filter((Follows.user_being_followed_id == user_id)).filter(Follows.blocked== True).all()
+    return render_template('users/blocked.html', users = blocked_users, user=g.user)
 
 @app.route('/users/profile', methods=["GET", "POST"])
 @login_required
